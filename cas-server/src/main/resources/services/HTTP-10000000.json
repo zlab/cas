@@ -1,0 +1,29 @@
+{
+  "@class": "org.apereo.cas.services.RegexRegisteredService",
+  "serviceId": "^(http)://.*",
+  "name": "HTTP",
+  //  "theme" : "apereo",
+  "id": 1,
+  "description": "This service definition authorizes all application urls that support HTTP protocols.",
+  "proxyPolicy": {
+    "@class": "org.apereo.cas.services.RefuseRegisteredServiceProxyPolicy"
+  },
+  "evaluationOrder": 1,
+  "logoutType": "BACK_CHANNEL",
+  "usernameAttributeProvider": {
+    "@class": "org.apereo.cas.services.DefaultRegisteredServiceUsernameProvider"
+  },
+  "attributeReleasePolicy": {
+    "@class": "org.apereo.cas.services.ReturnAllAttributeReleasePolicy",
+    "principalAttributesRepository": {
+      "@class": "org.apereo.cas.authentication.principal.DefaultPrincipalAttributesRepository"
+    },
+    "authorizedToReleaseCredentialPassword": false,
+    "authorizedToReleaseProxyGrantingTicket": false
+  },
+  "accessStrategy": {
+    "@class": "org.apereo.cas.services.DefaultRegisteredServiceAccessStrategy",
+    "enabled": true,
+    "ssoEnabled": true
+  }
+}
