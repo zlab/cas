@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p" xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:sec="http://www.springframework.org/schema/security"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+            http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+            http://www.springframework.org/schema/tx 
+            http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+
+    <bean id="authenticationManager" class="org.jasig.cas.authentication.AuthenticationManagerImpl">
+        <property name="authenticationMetaDataPopulators">
+            <list>
+                <bean
+                    class="org.jasig.cas.support.oauth.authentication.OAuthAuthenticationMetaDataPopulator" />
+                <bean
+                    class="org.jasig.cas.authentication.principal.RememberMeAuthenticationMetaDataPopulator" />
+            </list>
+        </property>
+
+        <property name="credentialsToPrincipalResolvers">
+            <list>
+                <bean
+                    class="org.jasig.cas.authentication.principal.UsernamePasswordCredentialsToPrincipalResolver"
+                    p:attributeRepository-ref="attributeRepository" />
+
+                <bean
+                    class="org.jasig.cas.authentication.principal.HttpBasedServiceCredentialsToPrincipalResolver" />
+
+                <bean
+                    class="org.jasig.cas.support.oauth.authentication.principal.OAuthCredentialsToPrincipalResolver" />
+            </list>
+        </property>
+
+        <property name="authenticationHandlers">
+            <list>
+                <bean
+                    class="org.jasig.cas.authentication.handler.support.HttpBasedServiceCredentialsAuthenticationHandler"
+                    p:httpClient-ref="httpClient" p:requireSecure="false" />
+
+                <bean class="net.zhanqi.app.cas.extend.UsernamePasswordAuthenticationHandler" />
+
+                <bean
+                    class="org.jasig.cas.support.oauth.authentication.handler.support.OAuthAuthenticationHandler"
+                    p:configuration-ref="oauthConfig" />
+            </list>
+        </property>
+    </bean>
+
+    <bean id="attributeRepository" class="org.jasig.services.persondir.support.StubPersonAttributeDao">
+        <property name="backingMap">
+            <map>
+                <entry key="uid" value="uid" />
+                <entry key="eduPersonAffiliation" value="eduPersonAffiliation" />
+                <entry key="groupMembership" value="groupMembership" />
+            </map>
+        </property>
+    </bean>
+
+    <bean id="serviceRegistryDao" class="net.zhanqi.app.cas.extend.JdbcServiceRegistryDaoImpl" />
+
+    <bean id="healthCheckMonitor" class="org.jasig.cas.monitor.HealthCheckMonitor">
+        <property name="monitors">
+            <list>
+                <bean class="org.jasig.cas.monitor.MemoryMonitor" p:freeMemoryWarnThreshold="10" />
+
+                <bean class="org.jasig.cas.monitor.SessionMonitor" p:ticketRegistry-ref="ticketRegistry"
+                    p:serviceTicketCountWarnThreshold="5000" p:sessionCountWarnThreshold="100000" />
+            </list>
+        </property>
+    </bean>
+</beans>
