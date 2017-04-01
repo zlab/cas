@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+    xmlns:context="http://www.springframework.org/schema/context" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+                http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                http://www.springframework.org/schema/context
+                http://www.springframework.org/schema/context/spring-context-4.0.xsd
+                http://www.springframework.org/schema/aop
+                http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                http://www.springframework.org/schema/util 
+                http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+
+    <aop:aspectj-autoproxy />
+
+    <!-- messages_zh -->
+    <bean id="messageSource" class="org.jasig.cas.web.view.CasReloadableMessageBundle"
+        p:basenames="classpath:messages" p:fallbackToSystemLocale="false" p:defaultEncoding="UTF-8"
+        p:cacheSeconds="180" p:useCodeAsDefaultMessage="true" />
+
+    <!-- servicesManager -->
+    <bean id="servicesManager" class="net.zhanqi.app.cas.extend.JdbcServicesManager" />
+
+    <bean id="httpClient" class="org.jasig.cas.util.SimpleHttpClient" p:readTimeout="5000"
+        p:connectionTimeout="5000" />
+
+    <!-- noRedirectHttpClient -->
+    <bean id="noRedirectHttpClient" class="org.jasig.cas.util.SimpleHttpClient" parent="httpClient"
+        p:followRedirects="false" />
+
+    <!-- ID生成算法 -->
+    <bean id="persistentIdGenerator" class="org.jasig.cas.authentication.principal.ShibbolethCompatiblePersistentIdGenerator"
+        p:salt="casrocks" />
+
+    <!-- logoutManager -->
+    <bean id="logoutManager" class="org.jasig.cas.logout.LogoutManagerImpl"
+        c:servicesManager-ref="servicesManager" c:httpClient-ref="noRedirectHttpClient"
+        p:disableSingleSignOut="${slo.callbacks.disabled:false}">
+    </bean>
+
+    <!-- CentralAuthenticationService -->
+    <bean id="centralAuthenticationService" class="org.jasig.cas.CentralAuthenticationServiceImpl"
+        c:ticketRegistry-ref="ticketRegistry" c:serviceTicketRegistry-ref="ticketRegistry"
+        c:authenticationManager-ref="authenticationManager"
+        c:ticketGrantingTicketUniqueTicketIdGenerator-ref="ticketGrantingTicketUniqueIdGenerator"
+        c:uniqueTicketIdGeneratorsForService-ref="uniqueIdGeneratorsMap"
+        c:ticketGrantingTicketExpirationPolicy-ref="grantingTicketExpirationPolicy"
+        c:serviceTicketExpirationPolicy-ref="serviceTicketExpirationPolicy" c:servicesManager-ref="servicesManager"
+        c:logoutManager-ref="logoutManager" p:persistentIdGenerator-ref="persistentIdGenerator">
+    </bean>
+
+    <bean id="proxy20Handler" class="org.jasig.cas.ticket.proxy.support.Cas20ProxyHandler"
+        p:httpClient-ref="httpClient" p:uniqueTicketIdGenerator-ref="proxy20TicketUniqueIdGenerator" />
+
+    <!-- ADVISORS -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" />
+
+    <bean class="org.jasig.cas.util.AutowiringSchedulerFactoryBean" />
+
+    <!-- 开放平台帐号登录 -->
+    <bean id="github" class="org.pac4j.oauth.client.GitHubClient">
+        <property name="key" value="83fe612751e7ada99b02" />
+        <property name="secret" value="7fc999e9cfc7db60e926df7569fb81a0c500efac" />
+    </bean>
+
+    <bean id="sinaweibo" class="net.zhanqi.app.cas.open.client.SinaWeiboClient">
+        <property name="key" value="3092106763" />
+        <property name="secret" value="1ed045217263e41732d52917623e4ce6" />
+    </bean>
+
+    <bean id="qzone" class="net.zhanqi.app.cas.open.client.QzoneClient">
+        <property name="key" value="100283919" />
+        <property name="secret" value="a645e522c99369c2fbcc191ae56ef14f" />
+        <property name="scope" value="get_user_info,get_info,add_t,get_fanslist,add_share" />
+    </bean>
+
+    <bean id="renren" class="net.zhanqi.app.cas.open.client.RenrenClient">
+        <property name="key" value="9fa46535c2e9432f9879996bbde43a59" />
+        <property name="secret" value="3679c04aa2504228bcee7e0714f6a61d" />
+        <property name="scope" value="read_user_blog,publish_share,publish_blog,send_message" />
+    </bean>
+
+    <bean id="caswrapper" class="org.pac4j.oauth.client.CasOAuthWrapperClient">
+        <property name="key" value="the_key" />
+        <property name="secret" value="the_secret" />
+        <property name="casOAuthUrl" value="${server.name}/cas2/oauth2" />
+    </bean>
+
+    <bean id="cas" class="org.pac4j.cas.client.CasClient">
+        <property name="casLoginUrl" value="${server.prefix}/login" />
+        <property name="casProtocol">
+            <util:constant static-field="org.pac4j.cas.client.CasClient.CasProtocol.SAML" />
+        </property>
+    </bean>
+
+    <bean id="clients" class="org.pac4j.core.client.Clients">
+        <property name="callbackUrl" value="${server.prefix}/login" />
+        <property name="clients">
+            <list>
+                <ref bean="sinaweibo" />
+                <ref bean="github" />
+                <ref bean="qzone" />
+                <ref bean="renren" />
+                <ref bean="caswrapper" />
+            </list>
+        </property>
+    </bean>
+</beans>

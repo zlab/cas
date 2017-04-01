@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<flow xmlns="http://www.springframework.org/schema/webflow" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.springframework.org/schema/webflow
+              http://www.springframework.org/schema/webflow/spring-webflow-2.0.xsd">
+
+    <var name="credential" class="org.jasig.cas.authentication.RememberMeUsernamePasswordCredential" />
+
+    <!-- 初始化 -->
+    <on-start>
+        <evaluate expression="initialFlowSetupAction" />
+    </on-start>
+
+    <!-- 初始化开放平台帐号URL -->
+    <!-- <action-state id="clientAction">
+        <evaluate expression="clientAction" />
+        <transition on="success" to="sendTicketGrantingTicket" />
+        <transition on="error" to="ticketGrantingTicketCheck" />
+        <transition on="stop" to="stopWebflow" />
+    </action-state> -->
+
+    <!-- <view-state id="stopWebflow" /> -->
+
+    <!-- TGT检查，是否已过期 -->
+    <action-state id="ticketGrantingTicketCheck">
+        <evaluate expression="ticketGrantingTicketCheckAction.checkValidity(flowRequestContext)" />
+        <transition on="notExists" to="serviceAuthorizationCheck" />
+        <transition on="invalid" to="terminateSession" />
+        <transition on="valid" to="hasServiceCheck" />
+    </action-state>
+
+    <!-- 授权服务检查 -->
+    <action-state id="serviceAuthorizationCheck">
+        <evaluate expression="serviceAuthorizationCheck" />
+        <transition to="generateLoginTicket" />
+    </action-state>
+
+    <!-- TGT已过期，则销毁，重新登录 -->
+    <action-state id="terminateSession">
+        <evaluate expression="terminateSessionAction.terminate(flowRequestContext)" />
+        <transition to="generateLoginTicket" />
+    </action-state>
+
+    <!-- 是否需要跳转 -->
+    <decision-state id="hasServiceCheck">
+        <if test="flowScope.service != null" then="generateServiceTicket" else="viewGenericLoginSuccess" />
+    </decision-state>
+
+    <!-- 生成LT -->
+    <action-state id="generateLoginTicket">
+        <evaluate expression="generateLoginTicketAction.generate(flowRequestContext)" />
+        <transition on="generated" to="viewLoginForm" />
+    </action-state>
+
+    <!-- 登录界面 -->
+    <view-state id="viewLoginForm" view="casLoginView" model="credential">
+        <binder>
+            <binding property="username" />
+            <binding property="password" />
+            <binding property="rememberMe" />
+        </binder>
+        <on-entry>
+            <set name="viewScope.commandName" value="'credential'" />
+        </on-entry>
+        <transition on="login" bind="true" validate="true" to="realLogin">
+            <evaluate expression="authenticationViaFormAction.doBind(flowRequestContext, flowScope.credential)" />
+        </transition>
+    </view-state>
+
+    <!-- 登录提交 -->
+    <action-state id="realLogin">
+        <evaluate
+            expression="authenticationViaFormAction.submit(flowRequestContext, flowScope.credential, messageContext)" />
+        <transition on="success" to="sendTicketGrantingTicket" />
+        <transition on="authenticationFailure" to="handleAuthenticationFailure" />
+        <transition on="error" to="generateLoginTicket" />
+    </action-state>
+
+    <!-- 登录失败 -->
+    <action-state id="handleAuthenticationFailure">
+        <evaluate
+            expression="authenticationExceptionHandler.handle(currentEvent.attributes.error, messageContext)" />
+        <transition to="generateLoginTicket" />
+    </action-state>
+
+    <!-- 登录成功，生成TGT -->
+    <action-state id="sendTicketGrantingTicket">
+        <evaluate expression="sendTicketGrantingTicketAction" />
+        <transition to="hasServiceCheck" />
+    </action-state>
+
+    <!-- 生成ST -->
+    <action-state id="generateServiceTicket">
+        <evaluate expression="generateServiceTicketAction" />
+        <transition on="success" to="warn" />
+        <transition on="error" to="generateLoginTicket" />
+    </action-state>
+
+    <!-- 跳转前提示 -->
+    <decision-state id="warn">
+        <if test="flowScope.warnCookieValue" then="showWarningView" else="redirect" />
+    </decision-state>
+
+    <!-- 跳转提示界面 -->
+    <end-state id="showWarningView" view="casLoginConfirmView" />
+
+    <!-- 跳转到Service -->
+    <action-state id="redirect">
+        <evaluate expression="flowScope.service.getResponse(requestScope.serviceTicketId)"
+            result-type="org.jasig.cas.authentication.principal.Response" result="requestScope.response" />
+        <transition to="postRedirectDecision" />
+    </action-state>
+
+    <!-- 跳转方式 -->
+    <decision-state id="postRedirectDecision">
+        <if test="requestScope.response.responseType.name() == 'POST'" then="postView" else="redirectView" />
+    </decision-state>
+
+    <end-state id="postView" view="postResponseView">
+        <on-entry>
+            <set name="requestScope.parameters" value="requestScope.response.attributes" />
+            <set name="requestScope.originalUrl" value="flowScope.service.id" />
+        </on-entry>
+    </end-state>
+
+    <!-- 跳转 -->
+    <end-state id="redirectView" view="externalRedirect:#{requestScope.response.url}" />
+
+    <!-- 全局错误界面 -->
+    <end-state id="viewServiceErrorView" view="viewServiceErrorView" />
+
+    <!-- 登录成功界面 -->
+    <end-state id="viewGenericLoginSuccess" view="casLoginGenericSuccessView" />
+
+    <global-transitions>
+        <transition to="viewLoginForm" on-exception="org.jasig.cas.services.UnauthorizedSsoServiceException" />
+        <transition to="viewServiceErrorView"
+            on-exception="org.springframework.webflow.execution.repository.NoSuchFlowExecutionException" />
+        <transition to="viewServiceErrorView" on-exception="org.jasig.cas.services.UnauthorizedServiceException" />
+    </global-transitions>
+</flow>

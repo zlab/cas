@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:applicationContext.xml
+            /WEB-INF/spring-configuration/*.xml
+            /WEB-INF/deployerConfigContext.xml
+        </param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>net.zhanqi.lib.web.ContextListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.jasig.cas.web.init.SafeContextLoaderListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>SessionIdCleanFilter</filter-name>
+        <filter-class>net.zhanqi.lib.web.SessionIdCleanFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>SessionIdCleanFilter</filter-name>
+        <url-pattern>/oauth2.0/authorize</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <filter-class>org.springframework.orm.hibernate4.support.OpenSessionInViewFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>OpenSessionInViewFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>cas</servlet-name>
+        <servlet-class>org.jasig.cas.web.init.SafeDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>cas</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>cas</servlet-name>
+        <url-pattern>/oauth2.0/*</url-pattern>
+    </servlet-mapping>
+
+    <jsp-config>
+        <jsp-property-group>
+            <url-pattern>*.jsp</url-pattern>
+            <page-encoding>utf-8</page-encoding>
+            <include-prelude>/WEB-INF/content/common/taglibs.jspf</include-prelude>
+            <trim-directive-whitespaces>true</trim-directive-whitespaces>
+        </jsp-property-group>
+    </jsp-config>
+
+</web-app>
