@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<link rel="stylesheet" href="/web/css/tuison.css" />
+		<script src="/admin/xenon/js/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" src="/web/js/fabu.js"></script>
+	</head>
+	<body>
+
+		<div class="top_hread">
+			<div class="top_hread_center">
+				租房发布
+			</div>
+		</div>
+        <form action="/web/bmstuisong/save" method="post" id="form">
+            <input type="hidden" name="hsid" value="${house.hsid!}"/>
+            <input type="hidden" id="oldhsid" value="${oldhouse.hsid!}"/>
+            <input type="hidden" name="belongerId" id="belongerId" value="${house.belongerId!}"/>
+            <input type="hidden"  id="message" value="${message!}"/>
+            <input type="hidden" name="houseType" value="${house.houseType!}" id="houseType">
+            <input type="hidden" name="hsmid" value="${house.hsmid!}">
+            <input type="hidden" name="initPrice" value="${initprice!}">
+            <script>
+                $(function () {
+					if($("#oldhsid").val()==null||$("#oldhsid").val()==""){
+						alert("推送失败");
+						$('#tijiao').attr('disabled',"true");
+						$('#tijiao').attr('style',"background: #B8B8B8;");
+					}
+                    var msg=$("#message").val();
+                        if (msg != null && msg != "") {
+                            alert(msg);
+                            $('#tijiao').attr('disabled',"true");
+                            $('#tijiao').attr('style',"background: #B8B8B8;");
+                        }
+                });
+            </script>
+		    <div class="conter_kuan">
+			<div class="conter_kuan_cent">
+				<div class="conter_jicuxinxi">
+					<div class="conter_jicuxinxi_hread">
+						基本信息
+					</div>
+					<div class="conter_jicuxinxi_body">
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">小区名称：</label>
+							<span class="fl">${oldhouse.stressName!}</span>
+						</div>
+						<div class="cont_jicuxinxi_two fl">
+							<label class="fl">小区地址：</label>
+							<span class="fl">${oldhouse.address!}</span>
+						</div>
+						<div style="clear: both;"></div>
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型：</label>
+							<span class="fl">${oldhouse.roomNumber!}室${oldhouse.hallNumber!}厅${oldhouse.toiletNumber!}卫</span>
+						</div>
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">朝&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;向：</label>
+							<span class="fl">${oldhouse.orientation!}</span>
+						</div>
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">建筑面积：</label>
+							<span class="fl">${oldhouse.area!}㎡ </span>
+						</div>
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">楼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;层：</label>
+							<span class="fl">${oldhouse.floor!}层/共${oldhouse.totalFloor!}层</span>
+						</div>
+
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">装修情况：</label>
+							<span class="fl">${oldhouse.decoration!} </span>
+						</div>
+						<div class="cont_jicuxinxi_one fl">
+							<label class="fl">租赁方式：</label>
+							<span class="fl">${oldhouse.rentType!} </span>
+						</div>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="conter_jicuxinxi martop20">
+					<div class="conter_jicuxinxi_hread">
+						销售信息
+					</div>
+					<div class="conter_jicuxinxi_body">
+						<div class="cont_jicuxinxi_three">
+							<label class="fl"><r style="color: red;">*</r>月&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;租：</label>
+							<input type="text" class="form-ctorl fl" name="price"  value="${oldhouse.price!}" id="price">
+							<span class="fl">元/月</span>
+							<div class="tishiyu">
+								提示：推送到XHJ.COM房源价格修改如果为录入价格（<span style="color:red">${initprice!}</span>元/月）的10%以内，则实时显示，如超过10%，会有1-3个工作日的审核时间，审核通过才能展示，XHJ.COM的价格显示以最后一次修改为准。
+							</div>
+						</div>
+						<div class="cont_jicuxinxi_three">
+							<label class="fl"><r style="color: red;">*</r>房源标题：</label>
+							<input type="text" class="form-ctorl1 fl" name="title" id="title" value="${oldhouse.title!}">
+							<span class="fl">还可以输入36个字符</span>
+							<div class="xie_biaoti fl" onclick="biaotixuanka()">
+								帮我写标题
+							</div>
+						</div>
+						<div style="display: none" data-flag="1" class="cont_jicuxinxi_three" id="btxk">
+							<label class="fl">标题选卡：</label>
+							<div class="tab_little fl" >
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input" >市中心
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input" >精品小区
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">品牌楼盘
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">市府中心
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">省府旁
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">湘江边
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">梅溪湖新城
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">洋湖片区
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">交通便利
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">地铁旁
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">商业中心
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">学区房
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">学校旁边
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">带学位
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">精装房
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">毛坯房
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">精装公寓
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">精装复式
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">一室一厅
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">热水空调
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">家具齐全
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">首次出租
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">押一付三
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">陪读首选
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">按揭舒适
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input"> 带阳台
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">高端装修
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">家电齐全
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">全新装修
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">上班首选
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">南北通透
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">采光绝佳
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">黄金楼层
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">视野开阔
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">独揽湖景
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">配套完善
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">拎包入住
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">带车位
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">独家房源
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">随时看房
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">随时入住
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">可短租
+								</div>
+								<div class="input_checkbox fl">
+									<input type="checkbox" class="input_checkbox_input">押一付二
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+					<div style="clear: both;"></div>
+				</div>
+				<div class="conter_jicuxinxi martop20">
+					<div class="conter_jicuxinxi_body">
+						<div class="cont_jicuxinxi_three">
+							<label class="fl"><r style="color: red;">*</r>个人点评：</label>
+							<textarea type="text" class="form-textare fl" name="description" id="description">${oldhouse.description!}</textarea>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+				</div>
+				<div class="conter_jicuxinxi martop20">
+					<div class="conter_jicuxinxi_body1">
+						<div class="cont_jicuxinxi_fore border-duse pad520">
+							<label class="fl">房源描述：</label>
+							<div  class="form-div fl fangyuanmiaoshu" >
+								<div class="btn_miaosu fl  <#if oldhouse.fyts??>active</#if>" data-name="fyts">房源特色</div>
+								<div class="btn_miaosu fl <#if oldhouse.hxmd??>active</#if>" data-name="hxmd">核心卖点</div>
+								<div class="btn_miaosu fl <#if oldhouse.hxjs??>active</#if>" data-name="hxjs">户型介绍</div>
+								<div class="btn_miaosu fl <#if oldhouse.zxms??>active</#if>" data-name="zxms">装修描述</div>
+								<div class="btn_miaosu fl <#if oldhouse.zbpt??>active</#if>" data-name="zbpt">周边配套</div>
+								<div class="btn_miaosu fl <#if oldhouse.jtcx??>active</#if>" data-name="jtcx">交通出行</div>
+								<div class="btn_miaosu fl <#if oldhouse.jypt??>active</#if>" data-name="jypt">教育配套</div>
+								<div class="btn_miaosu fl <#if oldhouse.jgfx??>active</#if>" data-name="jgfx">价格分析</div>
+								<div class="btn_miaosu fl  <#if oldhouse.xqjj??>active</#if>" data-name="xqjj">小区简介</div>
+								<div style="clear: both"></div>
+								<div style=" color: #999;line-height: 20px; font-size: 14px;">请选择自己了解的，如实准确的描述，可以多选，并且可以修改任意描述</div>
+							</div>
+							<div style="clear: both;"></div>
+						</div>
+						<div style="clear: both;"></div>
+						<div class="cont_jicuxinxi_fore pad520">
+							<label class="fl">房源标签：</label>
+							<div  class="form-div fl">
+                                <#if oldhouse.features??>
+                                    <#list oldhouse.features as items>
+                                        <span> ${items}</span>
+                                    </#list>
+                                </#if>
+
+
+							</div>
+							<div style="clear: both;"></div>
+						</div>
+						<div style="clear: both;"></div>
+                        <div class="miaoshubianji">
+                            <#if oldhouse.fyts??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">房源特色：</label>
+                                    <div  class="form-div fl fyts">
+                                        ${oldhouse.fyts!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('fyts')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="fyts" id="fyts">${oldhouse.fyts!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.hxmd??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">核心卖点：</label>
+                                    <div  class="form-div fl hxmd">
+                                        ${oldhouse.hxmd!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('hxmd')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="hxmd" id="hxmd">${oldhouse.hxmd!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.hxjs??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">户型介绍：</label>
+                                    <div  class="form-div fl hxjs">
+                                        ${oldhouse.hxjs!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('hxjs')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="hxjs" id="hxjs">${oldhouse.hxjs!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.zxms??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">装修描述：</label>
+                                    <div  class="form-div fl zxms">
+                                        ${oldhouse.zxms!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('zxms')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="zxms" id="zxms">${oldhouse.zxms!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.zbpt??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">周边配套：</label>
+                                    <div  class="form-div fl zbpt">
+                                        ${oldhouse.zxms!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('zbpt')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="zbpt" id="zbpt">${oldhouse.zbpt!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.jtcx??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">交通出行：</label>
+                                    <div  class="form-div fl jtcx">
+                                        ${oldhouse.jtcx!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('jtcx')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="jtcx" id="jtcx">${oldhouse.jtcx!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.jypt??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">教育配套：</label>
+                                    <div  class="form-div fl jypt">
+                                        ${oldhouse.jypt!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('jypt')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="jypt" id="jypt">${oldhouse.jypt!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.jgfx??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">价格分析：</label>
+                                    <div  class="form-div fl jgfx">
+                                        ${oldhouse.jgfx!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('jgfx')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="jgfx" id="jgfx">${oldhouse.jgfx!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                            <#if oldhouse.xqjj??>
+                                <div class="cont_jicuxinxi_fore backgrundf5 pad520">
+                                    <label class="fl">小区简介：</label>
+                                    <div  class="form-div fl xqjj">
+                                        ${oldhouse.xqjj!}&nbsp;&nbsp;&nbsp;<a class="bianji_btn"  href="javascript:lakai('xqjj')">编辑</a>
+                                    </div>
+                                    <textarea type="text" class="form-textare1 fl" style="display: none" name="xqjj" id="xqjj">${oldhouse.xqjj!}</textarea>
+                                    <div style="clear: both;"></div>
+                                </div>
+                                <div style="clear: both;"></div>
+                            </#if>
+                        </div>
+					</div>
+				</div>
+				<div class="conter_jicuxinxi martop20 tupianxinxin">
+					<div class="conter_jicuxinxi_hread">
+						图片信息
+					</div>
+                    <#assign index=0 />
+					<div class="conter_jicuxinxi_body">
+						<div class="cont_jicuxinxi_fore pad521">
+							<label class="fl"><r style="color: red;">*</r>室&nbsp;内&nbsp;图：</label>
+							<div  class="form-div fl" id="shineishow">
+                                <#if oldhouse.imgs ?? >
+                                    <#list oldhouse.imgs as item>
+                                        <#if item.imgType == 2>
+                                            <#if oldhouse.thumb==item.imgPath>
+                                                <div class="tupian_shan fl key_house_fangkan">
+                                                    <img src="${item.imgPath}" width="164"  height="119">
+                                                    <input type="hidden" name="imgs[${index}].imgPath" class="key_house_fangkan_path" value="${item.imgPath}"/>
+                                                    <input type="hidden" name="imgs[${index}].imgType" class="key_house_fangkan_type" value="${item.imgType}"/>
+                                                    <div class="shewei_fenmian" onclick="shewei(this)">当前封面</div>
+                                                    <div class="shanchu_btn" onclick="deleteImg(this)"></div>
+                                                </div>
+                                            <#else>
+                                                <div class="tupian_shan fl key_house_fangkan">
+                                                    <img src="${item.imgPath}" width="164"  height="119">
+                                                    <input type="hidden" name="imgs[${index}].imgPath" class="key_house_fangkan_path" value="${item.imgPath}"/>
+                                                    <input type="hidden" name="imgs[${index}].imgType" class="key_house_fangkan_type" value="${item.imgType}"/>
+                                                    <div class="shewei_fenmian1" onclick="shewei(this)">设为封面</div>
+                                                    <div class="shanchu_btn" onclick="deleteImg(this)"></div>
+                                                </div>
+                                            </#if>
+                                            <#assign index=index+1 />
+                                        </#if>
+                                    </#list>
+                                </#if>
+								<div class="tupian_shan fl">
+									<div class="tupian_shan fl" id="uploadsn">
+										<img src="/web/img/0011.png" class="img_btn_shang" >
+										<div class="shewei_fenmian2">上传图片</div>
+									</div>
+								</div>
+							</div>
+							<div style="clear: both;"></div>
+							<p class="tushan_tishi">室内图不能少于4张，最多可以推送12张，建议卧室、客厅、餐厅、厨房、阳台、卫生间等图片资源合理分配。</p>
+						</div>
+						<div class="cont_jicuxinxi_fore pad521">
+							<label class="fl"><r style="color: red;">*</r>户&nbsp;型&nbsp;图：</label>
+							<div  class="form-div fl"  id ="huxingshow">
+                                <#if oldhouse.imgs ?? >
+                                    <#list oldhouse.imgs as item>
+                                        <#if item.imgType == 3>
+                                            <#if oldhouse.thumb==item.imgPath>
+                                                <div class="tupian_shan fl key_house_fangkan">
+                                                    <img src="${item.imgPath}" width="164"  height="119">
+                                                    <input type="hidden" name="imgs[${index}].imgPath" class="key_house_fangkan_path" value="${item.imgPath}"/>
+                                                    <input type="hidden" name="imgs[${index}].imgType" class="key_house_fangkan_type" value="${item.imgType}"/>
+                                                    <div class="shewei_fenmian" onclick="shewei(this)">当前封面</div>
+                                                    <div class="shanchu_btn" onclick="deleteImg(this)"></div>
+                                                </div>
+                                            <#else>
+                                                <div class="tupian_shan fl key_house_fangkan">
+                                                    <img src="${item.imgPath}" width="164"  height="119">
+                                                    <input type="hidden" name="imgs[${index}].imgPath" class="key_house_fangkan_path" value="${item.imgPath}"/>
+                                                    <input type="hidden" name="imgs[${index}].imgType" class="key_house_fangkan_type" value="${item.imgType}"/>
+                                                    <div class="shewei_fenmian1" onclick="shewei(this)">设为封面</div>
+                                                    <div class="shanchu_btn" onclick="deleteImg(this)"></div>
+                                                </div>
+                                            </#if>
+                                            <#assign index=index+1 />
+                                        </#if>
+                                    </#list>
+                                </#if>
+								<div class="tupian_shan fl">
+									<div class="tupian_shan fl" id="uploadhx">
+										<img src="/web/img/0011.png" class="img_btn_shang" >
+										<div class="shewei_fenmian2">上传图片</div>
+									</div>
+								</div>
+							</div>
+							<div style="clear: both;"></div>
+							<p class="tushan_tishi">户型图上传最低可以为1张，最多可以推送5张</p>
+						</div>
+						<div class="cont_jicuxinxi_fore pad521">
+							<label class="fl">小&nbsp;区&nbsp;图：</label>
+							<div  class="form-div fl" id ="xiaoqushow">
+
+                                <#if oldhouse.imgs ?? >
+                                    <#list oldhouse.imgs as item>
+                                        <#if item.imgType == 1>
+                                            <#if oldhouse.thumb==item.imgPath>
+                                                <div class="tupian_shan fl key_house_fangkan">
+                                                    <img src="${item.imgPath}" width="164"  height="119">
+                                                    <input type="hidden" name="imgs[${index}].imgPath" class="key_house_fangkan_path" value="${item.imgPath}"/>
+                                                    <input type="hidden" name="imgs[${index}].imgType" class="key_house_fangkan_type" value="${item.imgType}"/>
+                                                    <div class="shewei_fenmian" onclick="shewei(this)">当前封面</div>
+                                                    <div class="shanchu_btn" onclick="deleteImg(this)"></div>
+                                                </div>
+                                            <#else>
+                                                <div class="tupian_shan fl key_house_fangkan">
+                                                    <img src="${item.imgPath}" width="164"  height="119">
+                                                    <input type="hidden" name="imgs[${index}].imgPath" class="key_house_fangkan_path" value="${item.imgPath}"/>
+                                                    <input type="hidden" name="imgs[${index}].imgType" class="key_house_fangkan_type" value="${item.imgType}"/>
+                                                    <div class="shewei_fenmian1" onclick="shewei(this)">设为封面</div>
+                                                    <div class="shanchu_btn" onclick="deleteImg(this)"></div>
+                                                </div>
+                                            </#if>
+                                            <#assign index=index+1 />
+                                        </#if>
+                                    </#list>
+                                </#if>
+								<div class="tupian_shan fl">
+									<div class="tupian_shan fl" id="uploadxq">
+										<img src="/web/img/0011.png" class="img_btn_shang" >
+										<div class="shewei_fenmian2">上传图片</div>
+									</div>
+								</div>
+							</div>
+							<div style="clear: both;"></div>
+							<p class="tushan_tishi">小区图上传数可以为0张，最多可以推送5张</p>
+						</div>
+						<div style="clear: both;"></div>
+					</div>
+				</div>
+				<div class="dibu_btn">
+					<button class="tijiao_btn"  onclick="return valiform()" id="tijiao">推送到新环境</button>
+				</div>
+			</div>
+		</div>
+            <#if (oldhouse.thumb??) && oldhouse.thumb!='' && oldhouse.thumb!="null" && oldhouse.thumb!="undefined">
+				<input type="hidden" name="thumb" id="thumb" value="${oldhouse.thumb}"/>
+			<#else>	
+				<input type="hidden" name="thumb" id="thumb" value="http://imgbms.xhjfw.com/null">
+			</#if>
+        </form>
+
+<script src="/web/js/plupload/plupload.full.min.js"></script>
+<script src="/web/js/plupload/i18n/zh_CN.js"></script>
+<script type="text/javascript">
+	//室内图上传
+	var uploadsnImage = new plupload.Uploader({
+	    runtimes : 'html5,html4',
+	    browse_button : 'uploadsn',
+	    url : '/admin/file/upload',
+
+	    filters : {
+	        max_file_size : '5mb',
+	        mime_types: [
+	            {title : "图片文件", extensions : "jpg,gif,png,xls,doc"}
+	        ]
+	    },
+	    init: {
+	        FilesAdded: function(up, files) {
+	           setTimeout("uploadsnImage.start()",100);   //IE8要缓一会再上传 
+	        },
+	        FileUploaded: function(up, file, resp) {
+	            var imgPath = resp.response;
+	            var size = $(".key_house_fangkan").size();
+	            var html = '<div class="tupian_shan fl key_house_fangkan">';
+	            html+='<img src="'+imgPath+'" width="164"  height="119">';
+	            html+='<input type="hidden" name="imgs['+size+'].imgPath" class="key_house_fangkan_path" value="'+imgPath+'"/>';
+	            html+='<input type="hidden" name="imgs['+size+'].imgType" class="key_house_fangkan_type" value="2"/>';
+	            html+='<div class="shewei_fenmian1" onclick="shewei(this)">设为封面</div>';
+	            html+='<div class="shanchu_btn" onclick="deleteImg(this)"></div>';
+	            html+='</div>';
+	            $("#shineishow").prepend(html);
+	        },
+	        Error: function(up, err) {
+	            alert("上传失败：" + err.message);
+	        }
+	    }
+		});
+	uploadsnImage.init();
+	
+	//户型图上传
+	var uploadhxImage = new plupload.Uploader({
+	    runtimes : 'html5,html4',
+	    browse_button : 'uploadhx',
+	    url : '/admin/file/upload',
+
+	    filters : {
+	        max_file_size : '5mb',
+	        mime_types: [
+	            {title : "图片文件", extensions : "jpg,gif,png,xls,doc"}
+	        ]
+	    },
+	    init: {
+	        FilesAdded: function(up, files) {
+	           setTimeout("uploadhxImage.start()",100);   //IE8要缓一会再上传 
+	        },
+	        FileUploaded: function(up, file, resp) {
+	            var imgPath = resp.response;
+	            var size = $(".key_house_fangkan").size();
+				var html = '<div class="tupian_shan fl key_house_fangkan">';
+				html+='<img src="'+imgPath+'" width="164"  height="119">';
+				html+='<input type="hidden" name="imgs['+size+'].imgPath" class="key_house_fangkan_path" value="'+imgPath+'"/>';
+				html+='<input type="hidden" name="imgs['+size+'].imgType" class="key_house_fangkan_type" value="3"/>';
+				html+='<div class="shewei_fenmian1" onclick="shewei(this)">设为封面</div>';
+				html+='<div class="shanchu_btn" onclick="deleteImg(this)"></div>';
+				html+='</div>';
+				$("#huxingshow").prepend(html);
+	        },
+	        Error: function(up, err) {
+	            alert("上传失败：" + err.message);
+	        }
+	    }
+	});
+	uploadhxImage.init();
+	//小区图上传
+	var uploadxqImage = new plupload.Uploader({
+	    runtimes : 'html5,html4',
+	    browse_button : 'uploadxq',
+	    url : '/admin/file/upload',
+
+	    filters : {
+	        max_file_size : '5mb',
+	        mime_types: [
+	            {title : "图片文件", extensions : "jpg,gif,png,xls,doc"}
+	        ]
+	    },
+	    init: {
+	        FilesAdded: function(up, files) {
+	           setTimeout("uploadxqImage.start()",100);   //IE8要缓一会再上传 
+	        },
+	        FileUploaded: function(up, file, resp) {
+	            var imgPath = resp.response;
+	            var size = $(".key_house_fangkan").size();
+				var html = '<div class="tupian_shan fl key_house_fangkan">';
+				html+='<img src="'+imgPath+'" width="164"  height="119">';
+				html+='<input type="hidden" name="imgs['+size+'].imgPath" class="key_house_fangkan_path" value="'+imgPath+'"/>';
+				html+='<input type="hidden" name="imgs['+size+'].imgType" class="key_house_fangkan_type" value="1"/>';
+				html+='<div class="shewei_fenmian1" onclick="shewei(this)">设为封面</div>';
+				html+='<div class="shanchu_btn" onclick="deleteImg(this)"></div>';
+				html+='</div>';
+				$("#xiaoqushow").prepend(html);
+	        },
+	        Error: function(up, err) {
+	            alert("上传失败：" + err.message);
+	        }
+	    }
+	});
+	uploadxqImage.init();
+
+  	function deleteImg(index){
+      	if(confirm("确定删除该房堪！")){
+          	$(index).parent().remove();
+          	//重写name
+          	$(".key_house_fangkan_path").each(function(index){
+              	$(this).attr("name","imgs["+index+"].imgPath");
+          	});
+          	//重写name
+          	$(".key_house_fangkan_type").each(function(index){
+              	$(this).attr("name","imgs["+index+"].imgType");
+          	});
+      	}
+  	}
+</script>
+</body>
+</html>
